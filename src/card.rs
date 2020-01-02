@@ -1,7 +1,7 @@
 #![allow(unused)]
 
 pub trait Card {
-    fn can_play_on(&self, other: &CardType) -> bool;
+    fn can_play_on<C: Into<CardType>>(&self, other: C) -> bool;
 }
 
 impl WildCard {
@@ -11,7 +11,7 @@ impl WildCard {
 }
 
 impl Card for WildCard {
-    fn can_play_on(&self, other: &CardType) -> bool {
+    fn can_play_on<C: Into<CardType>>(&self, other: C) -> bool {
         true
     }
 }
@@ -35,8 +35,8 @@ impl ColorCard {
 }
 
 impl Card for ColorCard {
-    fn can_play_on(&self, other: &CardType) -> bool {
-        match other {
+    fn can_play_on<C: Into<CardType>>(&self, other: C) -> bool {
+        match other.into() {
             CardType::Wild(card) => {
                 match card.face {
                     WildFace::DrawFour => true,
@@ -48,13 +48,13 @@ impl Card for ColorCard {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum CardType {
     Colored(ColorCard),
     Wild(WildCard)
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct WildCard {
     pub face: WildFace,
 }
@@ -65,7 +65,7 @@ pub enum WildFace {
     ColorWild(Color),
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct ColorCard {
     pub color: Color,
     pub face: Face,
@@ -129,5 +129,30 @@ impl From<Face> for isize {
             Face::Nine => 9,
             _ => panic!("Invalid face value."),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_card_rules() {
+        let draw_four = WildCard::new(WildFace::DrawFour);
+        let draw_four2 = draw_four.clone();
+        assert!(draw_four.can_play_on(draw_four));
+        
+        let green_draw_two = ColorCard::new(Color::Green, Face::DrawTwo);
+        let red_draw_two = ColorCard::new(Color::Red, Face::DrawTwo);
+        assert!(green_draw_two.can_play_on(red_draw_two));
+        assert!(red_draw_two.can_play_on(green_draw_two));
+
+        let yellow_zero = ColorCard::new(Color::Yellow, Face::Zero);
+        let blue_nine = ColorCard::new(Color::Blue, Face::Nine);
+        assert!(!yellow_zero.can_play_on(blue_nine));
+        assert!(!blue_nine.can_play_on(yellow_zero));
+
+        assert!(yellow_zero.can_play_on(draw_four));
+        assert!(draw_four.can_play_on(yellow_zero))
     }
 }
