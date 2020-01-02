@@ -1,5 +1,14 @@
 mod card;
+mod deck;
+
+use crate::deck::Deck;
+// use crate::card::*;
 
 fn main() {
-    println!("Hello, world!");
+    let mut deck = Deck::default();
+    deck.shuffle();
+    let cards = &*(deck);
+    for card in cards {
+        println!("{}", card);
+    }
 }
