@@ -7,7 +7,5 @@ use crate::deck::Deck;
 fn main() {
     let deck = Deck::default();
     let cards = &*deck;
-    for card in cards {
-        println!("{}", card);
-    }
+    cards.into_iter().for_each(|card| println!("{}", card));
 }

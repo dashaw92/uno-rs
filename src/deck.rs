@@ -15,7 +15,7 @@ impl Deck {
     }
 
     pub fn shuffle(&mut self) {
-        unimplemented!()
+        shuffle::shuffle(&mut self.cards);
     }
 }
 
@@ -39,7 +39,9 @@ impl Default for Deck {
             cards.push(WildCard::new(WildFace::ColorWild(Color::Red)).into());
         });
 
-        Deck::new(cards)
+        let mut deck = Deck::new(cards);
+        deck.shuffle();
+        deck
     }
 }
 
