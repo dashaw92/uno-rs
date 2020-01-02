@@ -1,7 +1,8 @@
+#![allow(unused)]
+
 use crate::card::*;
 
 use std::fmt::{self, Display};
-use std::cmp::Ordering;
 use std::ops::{Deref, DerefMut};
 
 pub struct Deck {
@@ -10,14 +11,11 @@ pub struct Deck {
 
 impl Deck {
     fn new(cards: Vec<CardType>) -> Self {
-        let mut deck = Deck { cards };
-
-        deck.shuffle();
-        deck
+        Deck { cards }
     }
 
     pub fn shuffle(&mut self) {
-        self.cards.sort_by(random);
+        unimplemented!()
     }
 }
 
@@ -92,23 +90,5 @@ impl Display for CardType {
 impl From<Vec<CardType>> for Deck {
     fn from(cards: Vec<CardType>) -> Deck {
         Deck::new(cards)
-    }
-}
-
-fn random(_: &CardType, _: &CardType) -> Ordering {
-    use std::time::SystemTime;
-
-    let now = SystemTime::now();
-    match now.duration_since(SystemTime::UNIX_EPOCH) {
-        Ok(time) => {
-            let ns = time.as_secs();
-            match ns % 3 {
-                0 => Ordering::Greater,
-                1 => Ordering::Less,
-                2 => Ordering::Equal,
-                _ => Ordering::Greater,
-            }
-        },
-        Err(_) => Ordering::Equal,
     }
 }

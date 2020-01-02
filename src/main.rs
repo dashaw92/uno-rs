@@ -5,9 +5,8 @@ use crate::deck::Deck;
 // use crate::card::*;
 
 fn main() {
-    let mut deck = Deck::default();
-    deck.shuffle();
-    let cards = &*(deck);
+    let deck = Deck::default();
+    let cards = &*deck;
     for card in cards {
         println!("{}", card);
     }
