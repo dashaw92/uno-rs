@@ -25,7 +25,7 @@ fn main() {
         let _ = stdin.read_line(&mut line);
         match line.trim().to_uppercase().as_ref() {
             "D" => {
-                let card = Uno::draw_card(&mut uno);
+                let card = uno.draw_card();
                 println!("You drew a card: {}", card);
                 uno.current_player().hand += card;
                 continue;

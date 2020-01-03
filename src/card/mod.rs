@@ -18,7 +18,7 @@ impl Display for Card {
         let color: char = self.color.into();
         let face: &str = self.face.into();
 
-        write!(f, "{};{}", face, color)
+        write!(f, "{}{}", color, face)
     }
 }
 
@@ -51,13 +51,9 @@ impl FromStr for Card {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Card, Self::Err> {
-        let indexes: Vec<_> = s.split_terminator(';').collect();
-        if indexes.len() < 2 {
-            return Err("Cards take the form of \"<FACE>;<COLOR>\", e.g. D;B for a blue draw four.");
-        }
-
-        let face = indexes[0].into();
-        let color = indexes[1].parse()?;
+        //I know this is messy, but for now it's fine
+        let color = s.chars().nth(0).unwrap().to_string().parse()?;
+        let face = s.chars().nth(1).unwrap().to_string().into();
 
         Ok(Card::new(color, face))
     }
@@ -70,8 +66,8 @@ mod tests {
 
     #[test]
     fn test_card_rules() {
-        let draw_four = Card::new(Color::Red, Face::DrawFour);
-        let draw_four2 = draw_four.clone();
+        let draw_four = Card::new(Color::Yellow, Face::DrawFour);
+        let draw_four2 = Card::new(Color::Red, Face::DrawFour);
         assert!(draw_four.can_play_on(draw_four2));
         
         let green_draw_two = Card::new(Color::Green, Face::DrawTwo);
@@ -85,36 +81,22 @@ mod tests {
         assert!(!blue_nine.can_play_on(yellow_zero));
 
         assert!(yellow_zero.can_play_on(draw_four));
-        assert!(draw_four.can_play_on(yellow_zero))
+        assert!(draw_four2.can_play_on(yellow_zero))
     }
 
     #[test]
     fn test_card_fromstr() {
-        let yellow_zero: Card = "C;0;Y".parse().unwrap();
+        let yellow_zero: Card = "Y0".parse().unwrap();
         assert_eq!(Card::new(Color::Yellow, Face::Zero), yellow_zero);
 
-        let red_wild: Card = "W;C;R".parse().unwrap();
+        let red_wild: Card = "RC".parse().unwrap();
         assert_eq!(Card::new(Color::Red, Face::ColorCard), red_wild);
     }
 
     #[test]
     #[should_panic]
     fn test_invalid_card_fromstr() {
-        let invalid: Card = "Dummy; ;Tuna".parse().unwrap(); //panic
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_invalid_cardface_fromstr() {
-        let invalids = (
-            "W;Invalid face;_".parse::<Card>(), 
-            "C;Invalid face;R".parse::<Card>()
-        );
-
-        match invalids {
-            (Ok(a), _) | (_, Ok(a)) => return, //failed test
-            (Err(a), Err(b)) => panic!("Working as expected."),
-        }
+        let invalid: Card = "Invalid Card".parse().unwrap(); //panic
     }
 
     #[test]

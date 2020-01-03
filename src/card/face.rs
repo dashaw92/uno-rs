@@ -36,7 +36,8 @@ where S: AsRef<str>
             "R" => Face::Reverse,
             "D" => Face::DrawFour,
             "T" => Face::DrawTwo,
-            _ => panic!("Invalid face identifier"),
+            "C" => Face::ColorCard,
+            _ => unreachable!(),
         }
     }
 }
