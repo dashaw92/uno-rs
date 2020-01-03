@@ -11,10 +11,10 @@ use crate::uno::Uno;
 
 fn main() {
     let players = vec![
-        Player::new("Dan"),
-        Player::new("Ali"),
-        Player::new("Bob"),
-        Player::new("Carl"),
+        "Dan".into(),
+        "Ali".into(),
+        "Bob".into(),
+        "Carl".into(),
     ];
 
     let uno = Uno::create_game(players);

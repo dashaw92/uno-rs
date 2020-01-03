@@ -46,7 +46,16 @@ impl Card for ColorCard {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+impl Card for CardType {
+    fn can_play_on<C: Into<CardType>>(&self, other: C) -> bool {
+        match self {
+            CardType::Wild(wild) => wild.can_play_on(other),
+            CardType::Colored(color) => color.can_play_on(other),
+        }
+    }
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum CardType {
     Colored(ColorCard),
     Wild(WildCard)

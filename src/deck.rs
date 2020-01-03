@@ -35,6 +35,16 @@ impl Deck {
     pub fn reclaim(&mut self, other: &mut Deck) {
         (*self).append(&mut (*other));
     }
+
+    pub fn has_card(&self, card: CardType) -> bool {
+        for i in 0..self.cards.len() {
+            if (*self)[i] == card {
+                return true;
+            }
+        }
+
+        false
+    }
 }
 
 impl Default for Deck {

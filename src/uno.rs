@@ -1,3 +1,4 @@
+use crate::card::*;
 use crate::deck::Deck;
 use crate::direction::*;
 use crate::player::Player;
@@ -10,6 +11,7 @@ pub struct Uno {
     direction: GameDirection,
     current_turn: usize,
     players: Vec<Player>,
+    current_player: usize,
 }
 
 impl Uno {
@@ -28,6 +30,7 @@ impl Uno {
             direction: GameDirection::Clockwise,
             current_turn: 0,
             players,
+            current_player: 0,
         };
 
         //this method of handing out cards is technically not fair
@@ -54,6 +57,73 @@ impl Uno {
         uno.discard += uno.draw_deck.draw().unwrap();
         uno
     }
+
+    pub fn play_card(&mut self, card: CardType) -> TurnResult {
+        let top_discard = match self.discard.peek_top_card() {
+            Some(&card) => card,
+            None => WildCard::new(WildFace::ColorWild(Color::Red)).into(),
+        };
+
+        let mut player = &mut self.players[self.current_player];
+
+        if !player.hand.has_card(card) {
+            return TurnResult::NotHoldingCard(card);
+        }
+
+        if !card.can_play_on(top_discard) {
+            return TurnResult::InvalidMove(top_discard, card);
+        }
+
+        player.hand -= card;
+        self.discard += card;
+
+        match card {
+            CardType::Wild(wild) => {
+                if wild.face == WildFace::DrawFour {
+                    for _ in 0..4 {
+                        player.add_card(match self.draw_deck.draw() {
+                            Some(card) => card,
+                            None => {
+                                self.draw_deck.reclaim(&mut self.discard);
+                                self.draw_deck.draw().unwrap()
+                            }
+                        });
+                    }
+                }
+            },
+            CardType::Colored(color) => {
+                match color.face {
+                    Face::DrawTwo => {
+                        self.get_next_player();
+                        player = &mut self.players[self.current_player];
+
+                        for _ in 0..2 {
+                            player.add_card(match self.draw_deck.draw() {
+                                Some(card) => card,
+                                None => {
+                                    self.draw_deck.reclaim(&mut self.discard);
+                                    self.draw_deck.draw().unwrap()
+                                }
+                            });
+                        }
+                    }, //draw two for next player
+                    Face::Reverse => self.direction = !self.direction,
+                    Face::Skip => { self.get_next_player(); }, //skip next player
+                    _ => {},
+                }
+            }
+        }
+
+        TurnResult::Success(card)
+    }
+
+    pub fn get_next_player(&mut self) -> usize {
+        let mut current = self.current_player;
+        current += self.direction;
+        current %= self.players.len();
+        self.current_player = current;
+        self.current_player
+    }
 }
 
 impl Display for Uno {
@@ -73,4 +143,10 @@ Turns: {}",
                 self.direction,
                 self.current_turn)
     }
+}
+
+pub enum TurnResult {
+    Success(CardType),
+    InvalidMove(CardType, CardType),
+    NotHoldingCard(CardType),
 }
