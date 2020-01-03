@@ -1,6 +1,8 @@
 use crate::card::CardType;
 use crate::deck::Deck;
 
+use std::fmt::{self, Display};
+
 pub struct Player {
     name: String,
     hand: Deck,
@@ -19,5 +21,11 @@ impl Player {
 
     pub fn add_card(&mut self, card: CardType) {
         self.hand += card;
+    }
+}
+
+impl Display for Player {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.name)
     }
 }

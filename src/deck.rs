@@ -31,6 +31,10 @@ impl Deck {
 
         self.cards.get(0)
     }
+
+    pub fn reclaim(&mut self, other: &mut Deck) {
+        (*self).append(&mut (*other));
+    }
 }
 
 impl Default for Deck {
