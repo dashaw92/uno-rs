@@ -41,9 +41,6 @@ fn main() {
                 println!("{:?}", uno.play_card(card));
                 println!();
             },
-            Err(cmd) if cmd.trim().to_uppercase() == "DRAW" => {
-                
-            },
             Err(e) => println!("Error parsing card from {}: {}", line, e),
         }
     }
