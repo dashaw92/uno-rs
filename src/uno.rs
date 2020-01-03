@@ -70,9 +70,9 @@ impl Uno {
         //     return TurnResult::NotHoldingCard(card);
         // }
 
-        // if !card.can_play_on(top_discard) {
-        //     return TurnResult::InvalidMove(top_discard, card);
-        // }
+        if !card.can_play_on(top_discard) {
+            return TurnResult::InvalidMove(top_discard, card);
+        }
 
         player.hand -= card;
         self.discard += card;
@@ -117,6 +117,7 @@ impl Uno {
             }
         }
 
+        self.get_next_player();
         TurnResult::Success(card)
     }
 
@@ -126,6 +127,10 @@ impl Uno {
         current %= self.players.len();
         self.current_player = current;
         self.current_player
+    }
+
+    pub fn current_player(&self) -> String {
+        self.players[self.current_player].name.clone()
     }
 }
 
@@ -148,6 +153,7 @@ Turns: {}",
     }
 }
 
+#[derive(Debug)]
 pub enum TurnResult {
     Success(CardType),
     InvalidMove(CardType, CardType),
