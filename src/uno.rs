@@ -84,6 +84,7 @@ impl Uno {
                                     Some(card) => card,
                                     None => {
                                         self.draw_deck.reclaim(&mut Deck::default());
+                                        self.discard += self.draw_deck.draw().unwrap();
                                         self.draw_deck.draw().unwrap()
                                     }
                                 }
@@ -109,6 +110,7 @@ impl Uno {
                                         Some(card) => card,
                                         None => {
                                             self.draw_deck.reclaim(&mut Deck::default());
+                                            self.discard += self.draw_deck.draw().unwrap();
                                             self.draw_deck.draw().unwrap()
                                         }
                                     }
