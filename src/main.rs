@@ -1,11 +1,12 @@
+#![allow(unused)]
+
 mod card;
 mod deck;
+mod uno;
+mod direction;
+mod player;
 
-use crate::deck::Deck;
-// use crate::card::*;
+use crate::uno::Uno;
 
 fn main() {
-    let deck = Deck::default();
-    // let cards = &*deck;
-    // cards.into_iter().for_each(|card| println!("{}", card));
 }

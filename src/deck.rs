@@ -1,21 +1,35 @@
-#![allow(unused)]
-
 use crate::card::*;
 
 use std::fmt::{self, Display};
-use std::ops::{Deref, DerefMut};
+use std::ops::{Deref, DerefMut, AddAssign, SubAssign};
 
 pub struct Deck {
     cards: Vec<CardType>,
 }
 
 impl Deck {
-    fn new(cards: Vec<CardType>) -> Self {
+    pub fn new(cards: Vec<CardType>) -> Self {
         Deck { cards }
     }
 
     pub fn shuffle(&mut self) {
         shuffle::shuffle(&mut self.cards);
+    }
+
+    pub fn draw(&mut self) -> Option<CardType> {
+        if self.cards.is_empty() {
+            return None;
+        }
+
+        Some(self.cards.remove(self.cards.len() - 1))
+    }
+
+    pub fn peek_top_card(&self) -> Option<&CardType> {
+        if self.cards.is_empty() {
+            return None;
+        }
+
+        self.cards.get(0)
     }
 }
 
@@ -46,16 +60,16 @@ impl Default for Deck {
 }
 
 impl Deref for Deck {
-    type Target = [CardType];
+    type Target = Vec<CardType>;
 
     fn deref(&self) -> &Self::Target {
-        self.cards.as_slice()
+        &self.cards
     }
 }
 
 impl DerefMut for Deck {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.cards.as_mut_slice()
+        &mut self.cards
     }
 }
 
@@ -79,10 +93,7 @@ impl Display for CardType {
                     Face::DrawTwo => write!(f, "{:?} Draw Two", card.color),
                     Face::Skip => write!(f, "{:?} Skip", card.color),
                     Face::Reverse => write!(f, "{:?} Reverse", card.color),
-                    face => {
-                        let value: isize = face.into();
-                        write!(f, "{:?} {}", card.color, value)
-                    }
+                    face => write!(f, "{:?} {:?}", card.color, face),
                 }
             },
         }
@@ -90,7 +101,54 @@ impl Display for CardType {
 }
 
 impl From<Vec<CardType>> for Deck {
-    fn from(cards: Vec<CardType>) -> Deck {
-        Deck::new(cards)
+    fn from(vec: Vec<CardType>) -> Deck {
+        Deck::new(vec)
+    }
+}
+
+impl AddAssign<CardType> for Deck {
+    fn add_assign(&mut self, rhs: CardType) {
+        (*self).insert(0, rhs);
+    }
+}
+
+impl SubAssign<CardType> for Deck {
+    fn sub_assign(&mut self, rhs: CardType) {
+        if !self.contains(&rhs) {
+            return;
+        }
+
+        for i in 0..self.cards.len() {
+            if (*self)[i] == rhs {
+                (*self).remove(i);
+                return;
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_add_assign() {
+        let mut deck = Deck::default();
+        let top = deck.draw().unwrap();
+        assert_eq!(107, (*deck).len());
+
+        deck += top.clone();
+        assert_eq!(deck.peek_top_card(), Some(&top));
+        assert_eq!(108, (*deck).len());
+    }
+
+    #[test]
+    fn test_sub_assign() {
+        let mut deck = Deck::default();
+        let top = deck.peek_top_card().unwrap().clone();
+        assert_eq!(108, (*deck).len());
+
+        deck -= top;
+        assert_eq!(107, (*deck).len());
     }
 }

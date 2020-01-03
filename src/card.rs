@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 pub trait Card {
     fn can_play_on<C: Into<CardType>>(&self, other: C) -> bool;
 }
@@ -48,7 +46,7 @@ impl Card for ColorCard {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub enum CardType {
     Colored(ColorCard),
     Wild(WildCard)
@@ -110,24 +108,6 @@ impl From<isize> for Face {
             8 => Face::Eight,
             9 => Face::Nine,
             _ => panic!("Cannot create a face with a value outside the range of 0-9!"),
-        }
-    }
-}
-
-impl From<Face> for isize {
-    fn from(face: Face) -> isize {
-        match face {
-            Face::Zero => 0,
-            Face::One => 1,
-            Face::Two => 2,
-            Face::Three => 3,
-            Face::Four => 4,
-            Face::Five => 5,
-            Face::Six => 6,
-            Face::Seven => 7,
-            Face::Eight => 8,
-            Face::Nine => 9,
-            _ => panic!("Invalid face value."),
         }
     }
 }
