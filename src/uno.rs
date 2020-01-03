@@ -6,9 +6,9 @@ use crate::player::Player;
 use std::fmt::{self, Display};
 
 pub struct Uno {
-    draw_deck: Deck,
-    discard: Deck,
-    direction: GameDirection,
+    pub draw_deck: Deck,
+    pub discard: Deck,
+    pub direction: GameDirection,
     current_turn: usize,
     players: Vec<Player>,
     current_player: usize,
@@ -28,7 +28,7 @@ impl Uno {
             draw_deck: Deck::default(),
             discard: Vec::with_capacity(108).into(),
             direction: GameDirection::Clockwise,
-            current_turn: 0,
+            current_turn: 1,
             players,
             current_player: 0,
         };
@@ -40,21 +40,13 @@ impl Uno {
         //but who cares
         (0..uno.players.len()).into_iter().for_each(|i| {
             (0..7).into_iter().for_each(|_| {
-                let card = match uno.draw_deck.draw() {
-                    Some(card) => card,
-                    None => {
-                        uno.draw_deck.reclaim(&mut uno.discard);
-                        //should never happen, but whatever
-                        //if it's an issue, I can always revist it
-                        uno.draw_deck.draw().unwrap()
-                    }
-                };
-
+                let card = Uno::draw_card(&mut uno);
                 uno.players[i].add_card(card);
             });
         });
 
-        uno.discard += uno.draw_deck.draw().unwrap();
+        let top = Uno::draw_card(&mut uno);
+        uno.discard += top;
         uno
     }
 
@@ -66,9 +58,9 @@ impl Uno {
 
         let mut player = &mut self.players[self.current_player];
 
-        // if !player.hand.has_card(card) {
-        //     return TurnResult::NotHoldingCard(card);
-        // }
+        if !player.hand.has_card(card) {
+            return TurnResult::NotHoldingCard(card);
+        }
 
         if !card.can_play_on(top_discard) {
             return TurnResult::InvalidMove(top_discard, card);
@@ -80,48 +72,64 @@ impl Uno {
         match card {
             CardType::Wild(wild) => {
                 if wild.face == WildFace::DrawFour {
-                    self.get_next_player();
-                    player = &mut self.players[self.current_player];
+                    self.do_turn_increase();
+                    let player = &mut self.players[self.current_player];
                     
                     for _ in 0..4 {
-                        player.add_card(match self.draw_deck.draw() {
+                        let card = match self.draw_deck.draw() {
                             Some(card) => card,
                             None => {
                                 self.draw_deck.reclaim(&mut self.discard);
-                                self.draw_deck.draw().unwrap()
+                                match self.draw_deck.draw() {
+                                    Some(card) => card,
+                                    None => {
+                                        self.draw_deck.reclaim(&mut Deck::default());
+                                        self.draw_deck.draw().unwrap()
+                                    }
+                                }
                             }
-                        });
+                        };
+                        player.add_card(card);
                     }
+                    
                 }
             },
             CardType::Colored(color) => {
                 match color.face {
                     Face::DrawTwo => {
-                        self.get_next_player();
+                        self.do_turn_increase();
                         player = &mut self.players[self.current_player];
 
                         for _ in 0..2 {
-                            player.add_card(match self.draw_deck.draw() {
+                            let card = match self.draw_deck.draw() {
                                 Some(card) => card,
                                 None => {
                                     self.draw_deck.reclaim(&mut self.discard);
-                                    self.draw_deck.draw().unwrap()
+                                    match self.draw_deck.draw() {
+                                        Some(card) => card,
+                                        None => {
+                                            self.draw_deck.reclaim(&mut Deck::default());
+                                            self.draw_deck.draw().unwrap()
+                                        }
+                                    }
                                 }
-                            });
+                            };
+                            player.add_card(card);
                         }
                     }, //draw two for next player
                     Face::Reverse => self.direction = !self.direction,
-                    Face::Skip => { self.get_next_player(); }, //skip next player
+                    Face::Skip => { self.do_turn_increase(); }, //skip next player
                     _ => {},
                 }
             }
         }
 
-        self.get_next_player();
+        self.do_turn_increase();
         TurnResult::Success(card)
     }
 
-    pub fn get_next_player(&mut self) -> usize {
+    fn do_turn_increase(&mut self) -> usize {
+        self.current_turn += 1;
         let mut current = self.current_player;
         current += self.direction;
         current %= self.players.len();
@@ -129,8 +137,30 @@ impl Uno {
         self.current_player
     }
 
-    pub fn current_player(&self) -> String {
-        self.players[self.current_player].name.clone()
+    pub fn current_player(&mut self) -> &mut Player {
+        &mut self.players[self.current_player]
+    }
+
+    
+    //I wanted to use this inside the "play_card" method,
+    //but it gives me a bunch of mut borrow issues.
+    //It's only a small amount of code bloat to not use this, 
+    //so I guess I'll have to make do.
+    pub fn draw_card(uno: &mut Uno) -> CardType {
+        match uno.draw_deck.draw() {
+            Some(card) => card,
+            None => {
+                uno.draw_deck.reclaim(&mut uno.discard);
+                match uno.draw_deck.draw() {
+                    Some(card) => card,
+                    None => {
+                        uno.draw_deck.reclaim(&mut Deck::default());
+                        uno.draw_deck.draw().unwrap()
+                    
+                    }
+                }
+            }
+        }
     }
 }
 

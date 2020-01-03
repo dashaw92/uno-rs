@@ -38,8 +38,15 @@ impl Deck {
 
     pub fn has_card(&self, card: CardType) -> bool {
         for i in 0..self.cards.len() {
-            if (*self)[i] == card {
-                return true;
+            match card {
+                CardType::Wild(WildCard { face: WildFace::ColorWild(_) }) => {
+                    if let CardType::Wild(WildCard { face: WildFace::ColorWild(_)}) = (*self)[i] {
+                        return true;
+                    }
+                },
+                _ => if (*self)[i] == card {
+                    return true;
+                },
             }
         }
 
@@ -89,7 +96,8 @@ impl DerefMut for Deck {
 
 impl Display for Deck {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self.cards)
+        let joined = self.cards.iter().map(|card| format!("{} ;", card)).fold(String::new(), |acc, card| acc + &card);
+        write!(f, "{}", joined)
     }
 }
 
@@ -99,7 +107,7 @@ impl Display for CardType {
             CardType::Wild(wild) => {
                 match wild.face {
                     WildFace::DrawFour => write!(f, "Draw Four"),
-                    WildFace::ColorWild(color) => write!(f, "{:?} Wild Card", color),
+                    WildFace::ColorWild(_) => write!(f, "Wild Card"),
                 }
             },
             CardType::Colored(card) => {
@@ -133,9 +141,17 @@ impl SubAssign<CardType> for Deck {
         }
 
         for i in 0..self.cards.len() {
-            if (*self)[i] == rhs {
-                (*self).remove(i);
-                return;
+            match rhs {
+                CardType::Wild(WildCard { face: WildFace::ColorWild(_) }) => {
+                    if let CardType::Wild(WildCard { face: WildFace::ColorWild(_)}) = (*self)[i] {
+                        (*self).remove(i);
+                        return;
+                    }
+                },
+                _ => if (*self)[i] == rhs {
+                    (*self).remove(i);
+                    return;
+                },
             }
         }
     }
