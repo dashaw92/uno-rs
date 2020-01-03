@@ -26,7 +26,7 @@ fn main() {
         match line.trim().to_uppercase().as_ref() {
             "D" => {
                 let card = uno.draw_card();
-                println!("You drew a card: {}", card);
+                println!("You drew a card: {}", card.display_name());
                 uno.current_player().hand += card;
                 continue;
             },
@@ -37,7 +37,7 @@ fn main() {
         match line.parse::<Card>() {
             Ok(card) => {
                 println!();
-                println!("You played a {}!", card);
+                println!("You played a {}!", card.display_name());
                 println!("{:?}", uno.play_card(card));
                 println!();
             },
