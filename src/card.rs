@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 pub trait Card {
     fn can_play_on<C: Into<CardType>>(&self, other: C) -> bool;
 }
@@ -55,6 +57,52 @@ impl Card for CardType {
     }
 }
 
+impl FromStr for CardType {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<CardType, Self::Err> {
+        let indexes: Vec<_> = s.split_terminator(';').collect();
+        if indexes.len() < 3 {
+            return Err("Cards take the form of \"<TYPE>;<FACE>;[COLOR]\", e.g. W;D;_ for a draw four.");
+        }
+
+        match indexes[0] {
+            val if !&["w", "W", "C", "c"].contains(&val) => return Err("Invalid card type. Must either be W or C."),
+            "w" | "W" => {
+                let face = match indexes[1] {
+                    "D" => WildFace::DrawFour,
+                    "C" => {
+                        let color = indexes[2].parse()?;
+                        WildFace::ColorWild(color)
+                    },
+                    _ => return Err("Invalid face for wild card. Must be either D or C."),
+                };
+
+                Ok(WildCard::new(face).into())
+            },
+            "c" | "C" => {
+                let color = indexes[2].parse()?;
+                let face = match indexes[1] {
+                    "s" | "S" => Face::Skip,
+                    "d" | "D" => Face::DrawTwo,
+                    "r" | "R" => Face::Reverse,
+                    num => {
+                        let digit = match num.parse::<isize>() {
+                            Ok(d) => d,
+                            Err(_) => return Err("Invalid face for color card. Must be S, D, R, or a number from 0 to 9 inclusive."),
+                        };
+
+                        digit.into()
+                    }
+                };
+
+                Ok(ColorCard::new(color, face).into())
+            },
+            _ => unreachable!(),
+        }
+    }
+}
+
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum CardType {
     Colored(ColorCard),
@@ -84,6 +132,27 @@ pub enum Color {
     Green,
     Blue,
     Yellow,
+}
+
+impl FromStr for Color {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Color, Self::Err> {
+        if s.is_empty() {
+            return Err("Color cannot be empty.");
+        }
+
+        match s.chars().nth(0) {
+            None => Err("Cannot get first character of color."),
+            Some(ch) => match ch {
+                'y' | 'Y' => Ok(Color::Yellow),
+                'r' | 'R' => Ok(Color::Red),
+                'b' | 'B' => Ok(Color::Blue),
+                'g' | 'G' => Ok(Color::Green),
+                _ => Err("Colors must be one of Y, R, G, or B."),
+            },
+        }
+    }
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
@@ -143,5 +212,55 @@ mod tests {
 
         assert!(yellow_zero.can_play_on(draw_four));
         assert!(draw_four.can_play_on(yellow_zero))
+    }
+
+    #[test]
+    fn test_card_fromstr() {
+        let yellow_zero: CardType = "C;0;Y".parse().unwrap();
+        assert_eq!(CardType::Colored(ColorCard::new(Color::Yellow, Face::Zero)), yellow_zero);
+
+        let red_wild: CardType = "W;C;R".parse().unwrap();
+        assert_eq!(CardType::Wild(WildCard::new(WildFace::ColorWild(Color::Red))), red_wild);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_invalid_cardtype_fromstr() {
+        let invalid: CardType = "Dummy; ;Tuna".parse().unwrap(); //panic
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_invalid_cardface_fromstr() {
+        let invalids = (
+            "W;Invalid face;_".parse::<CardType>(), 
+            "C;Invalid face;R".parse::<CardType>()
+        );
+
+        match invalids {
+            (Ok(a), _) | (_, Ok(a)) => return, //failed test
+            (Err(a), Err(b)) => panic!("Working as expected."),
+        }
+    }
+
+    #[test]
+    fn test_color_fromstr() {
+        let color = "Y".parse().unwrap();
+        assert_eq!(Color::Yellow, color);
+
+        let color = "R".parse().unwrap();
+        assert_eq!(Color::Red, color);
+
+        let color = "G".parse().unwrap();
+        assert_eq!(Color::Green, color);
+
+        let color = "B".parse().unwrap();
+        assert_eq!(Color::Blue, color);
+    }
+
+    #[test]
+    #[should_panic]
+    fn invalid_color_fromstr() {
+        let color: Color = "Z".parse().unwrap();
     }
 }

@@ -66,13 +66,13 @@ impl Uno {
 
         let mut player = &mut self.players[self.current_player];
 
-        if !player.hand.has_card(card) {
-            return TurnResult::NotHoldingCard(card);
-        }
+        // if !player.hand.has_card(card) {
+        //     return TurnResult::NotHoldingCard(card);
+        // }
 
-        if !card.can_play_on(top_discard) {
-            return TurnResult::InvalidMove(top_discard, card);
-        }
+        // if !card.can_play_on(top_discard) {
+        //     return TurnResult::InvalidMove(top_discard, card);
+        // }
 
         player.hand -= card;
         self.discard += card;
@@ -80,6 +80,9 @@ impl Uno {
         match card {
             CardType::Wild(wild) => {
                 if wild.face == WildFace::DrawFour {
+                    self.get_next_player();
+                    player = &mut self.players[self.current_player];
+                    
                     for _ in 0..4 {
                         player.add_card(match self.draw_deck.draw() {
                             Some(card) => card,
