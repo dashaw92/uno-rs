@@ -96,29 +96,8 @@ impl DerefMut for Deck {
 
 impl Display for Deck {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let joined = self.cards.iter().map(|card| format!("{} ;", card)).fold(String::new(), |acc, card| acc + &card);
+        let joined = self.cards.iter().map(|card| format!(" {} :", card.display_name())).fold(String::new(), |acc, card| acc + &card);
         write!(f, "{}", joined)
-    }
-}
-
-impl Display for CardType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            CardType::Wild(wild) => {
-                match wild.face {
-                    WildFace::DrawFour => write!(f, "Draw Four"),
-                    WildFace::ColorWild(_) => write!(f, "Wild Card"),
-                }
-            },
-            CardType::Colored(card) => {
-                match card.face {
-                    Face::DrawTwo => write!(f, "{:?} Draw Two", card.color),
-                    Face::Skip => write!(f, "{:?} Skip", card.color),
-                    Face::Reverse => write!(f, "{:?} Reverse", card.color),
-                    face => write!(f, "{:?} {:?}", card.color, face),
-                }
-            },
-        }
     }
 }
 

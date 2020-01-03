@@ -1,3 +1,4 @@
+use std::fmt::{self, Display};
 use std::str::FromStr;
 
 pub trait Card {
@@ -53,6 +54,80 @@ impl Card for CardType {
         match self {
             CardType::Wild(wild) => wild.can_play_on(other),
             CardType::Colored(color) => color.can_play_on(other),
+        }
+    }
+}
+
+impl Display for CardType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut ctype = "";
+        let mut face = "";
+        let mut color = "";
+
+        match self {
+            CardType::Wild(wild) => {
+                ctype = "W";
+                match wild.face {
+                    WildFace::DrawFour => face = "D",
+                    WildFace::ColorWild(col) => {
+                        face = "C";
+                        color = match col {
+                            Color::Red => "R",
+                            Color::Green => "G",
+                            Color::Blue => "B",
+                            Color::Yellow => "Y",
+                        }
+                    }
+                }
+            },
+            CardType::Colored(card) => {
+                ctype = "C";
+                face = match card.face {
+                    Face::Skip => "S",
+                    Face::DrawTwo => "D",
+                    Face::Reverse => "R",
+                    Face::Zero =>  "0",
+                    Face::One =>   "1",
+                    Face::Two =>   "2",
+                    Face::Three => "3",
+                    Face::Four =>  "4",
+                    Face::Five =>  "5",
+                    Face::Six =>   "6",
+                    Face::Seven => "7",
+                    Face::Eight => "8",
+                    Face::Nine =>  "9",
+                };
+
+                color = match card.color {
+                    Color::Red => "R",
+                    Color::Green => "G",
+                    Color::Blue => "B",
+                    Color::Yellow => "Y",
+                }
+            },
+        }
+
+        write!(f, "{};{};{}", ctype, face, color)
+    }
+}
+
+impl CardType {
+    pub fn display_name(&self) -> String {
+        match self {
+            CardType::Wild(wild) => {
+                match wild.face {
+                    WildFace::DrawFour => "Draw Four".into(),
+                    WildFace::ColorWild(_) => "Wild Card".into(),
+                }
+            },
+            CardType::Colored(card) => {
+                match card.face {
+                    Face::DrawTwo => format!("{:?} Draw Two", card.color),
+                    Face::Skip => format!("{:?} Skip", card.color),
+                    Face::Reverse => format!("{:?} Reverse", card.color),
+                    face => format!("{:?} {:?}", card.color, face),
+                }
+            },
         }
     }
 }

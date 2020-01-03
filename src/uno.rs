@@ -152,11 +152,14 @@ impl Uno {
             None => {
                 uno.draw_deck.reclaim(&mut uno.discard);
                 match uno.draw_deck.draw() {
-                    Some(card) => card,
+                    Some(card) => {
+                        uno.discard += card;
+                        uno.draw_deck.draw().unwrap()
+                    },
                     None => {
                         uno.draw_deck.reclaim(&mut Deck::default());
+                        uno.discard += uno.draw_deck.draw().unwrap();
                         uno.draw_deck.draw().unwrap()
-                    
                     }
                 }
             }
