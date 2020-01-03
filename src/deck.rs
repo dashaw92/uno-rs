@@ -1,14 +1,14 @@
-use crate::card::*;
+use crate::card::{*, face::*, color::*};
 
 use std::fmt::{self, Display};
 use std::ops::{Deref, DerefMut, AddAssign, SubAssign};
 
 pub struct Deck {
-    cards: Vec<CardType>,
+    cards: Vec<Card>,
 }
 
 impl Deck {
-    pub fn new(cards: Vec<CardType>) -> Self {
+    pub fn new(cards: Vec<Card>) -> Self {
         Deck { cards }
     }
 
@@ -16,7 +16,7 @@ impl Deck {
         shuffle::shuffle(&mut self.cards);
     }
 
-    pub fn draw(&mut self) -> Option<CardType> {
+    pub fn draw(&mut self) -> Option<Card> {
         if self.cards.is_empty() {
             return None;
         }
@@ -24,7 +24,7 @@ impl Deck {
         Some(self.cards.remove(self.cards.len() - 1))
     }
 
-    pub fn peek_top_card(&self) -> Option<&CardType> {
+    pub fn peek_top_card(&self) -> Option<&Card> {
         if self.cards.is_empty() {
             return None;
         }
@@ -36,42 +36,32 @@ impl Deck {
         (*self).append(&mut (*other));
     }
 
-    pub fn has_card(&self, card: CardType) -> bool {
-        for i in 0..self.cards.len() {
-            match card {
-                CardType::Wild(WildCard { face: WildFace::ColorWild(_) }) => {
-                    if let CardType::Wild(WildCard { face: WildFace::ColorWild(_)}) = (*self)[i] {
-                        return true;
-                    }
-                },
-                _ => if (*self)[i] == card {
-                    return true;
-                },
-            }
-        }
-
-        false
+    pub fn has_card(&self, rhs: Card) -> bool {
+        self.cards.iter().any(|&card| match card.face {
+            Face::ColorCard | Face::DrawFour => card.face == rhs.face,
+            _ => card == rhs,
+        })
     }
 }
 
 impl Default for Deck {
     fn default() -> Deck {
-        let mut cards: Vec<CardType> = Vec::with_capacity(108);
+        let mut cards: Vec<Card> = Vec::with_capacity(108);
 
         &[Color::Red, Color::Green, Color::Blue, Color::Yellow].into_iter().for_each(|&color| {
-            cards.push(ColorCard::new(color, 0.into()).into());
+            cards.push(Card::new(color, "0".into()).into());
             (0..2).into_iter().for_each(|_| {
-                cards.push(ColorCard::new(color, Face::DrawTwo).into());
-                cards.push(ColorCard::new(color, Face::Reverse).into());
-                cards.push(ColorCard::new(color, Face::Skip).into());
+                cards.push(Card::new(color, Face::DrawTwo).into());
+                cards.push(Card::new(color, Face::Reverse).into());
+                cards.push(Card::new(color, Face::Skip).into());
 
-                (1..=9).into_iter().for_each(|val| cards.push(ColorCard::new(color, val.into()).into()));
+                (1..=9).into_iter().for_each(|val| cards.push(Card::new(color, val.to_string().into()).into()));
             });
         });
 
         (0..4).into_iter().for_each(|_| {
-            cards.push(WildCard::new(WildFace::DrawFour).into());
-            cards.push(WildCard::new(WildFace::ColorWild(Color::Red)).into());
+            cards.push(Card::new(Color::Red, Face::DrawFour));
+            cards.push(Card::new(Color::Red, Face::ColorCard));
         });
 
         let mut deck = Deck::new(cards);
@@ -81,7 +71,7 @@ impl Default for Deck {
 }
 
 impl Deref for Deck {
-    type Target = Vec<CardType>;
+    type Target = Vec<Card>;
 
     fn deref(&self) -> &Self::Target {
         &self.cards
@@ -101,28 +91,24 @@ impl Display for Deck {
     }
 }
 
-impl From<Vec<CardType>> for Deck {
-    fn from(vec: Vec<CardType>) -> Deck {
+impl From<Vec<Card>> for Deck {
+    fn from(vec: Vec<Card>) -> Deck {
         Deck::new(vec)
     }
 }
 
-impl AddAssign<CardType> for Deck {
-    fn add_assign(&mut self, rhs: CardType) {
+impl AddAssign<Card> for Deck {
+    fn add_assign(&mut self, rhs: Card) {
         (*self).insert(0, rhs);
     }
 }
 
-impl SubAssign<CardType> for Deck {
-    fn sub_assign(&mut self, rhs: CardType) {
-        if !self.contains(&rhs) {
-            return;
-        }
-
+impl SubAssign<Card> for Deck {
+    fn sub_assign(&mut self, rhs: Card) {
         for i in 0..self.cards.len() {
-            match rhs {
-                CardType::Wild(WildCard { face: WildFace::ColorWild(_) }) => {
-                    if let CardType::Wild(WildCard { face: WildFace::ColorWild(_)}) = (*self)[i] {
+            match rhs.face {
+                Face::ColorCard | Face::DrawFour => {
+                    if (*self)[i].face == rhs.face {
                         (*self).remove(i);
                         return;
                     }

@@ -1,4 +1,4 @@
-use crate::card::CardType;
+use crate::card::Card;
 use crate::deck::Deck;
 
 use std::fmt::{self, Display};
@@ -19,7 +19,7 @@ impl Player {
         }
     }
 
-    pub fn add_card(&mut self, card: CardType) {
+    pub fn add_card(&mut self, card: Card) {
         self.hand += card;
     }
 }

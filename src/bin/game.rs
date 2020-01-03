@@ -34,7 +34,7 @@ fn main() {
             _ => {},
         }
 
-        match line.parse::<CardType>() {
+        match line.parse::<Card>() {
             Ok(card) => {
                 println!();
                 println!("You played a {}!", card);
