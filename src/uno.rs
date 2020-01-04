@@ -84,7 +84,12 @@ impl Uno {
                 let player = &mut self.players[self.current_player];
                 drawcards.into_iter().for_each(|card| player.add_card(card));
             },
-            Face::Reverse => self.direction = !self.direction,
+            Face::Reverse => {
+                self.direction = !self.direction;
+                if self.players.len() < 3 {
+                    self.do_turn_increase();
+                }
+            },
             Face::Skip => { self.do_turn_increase(); }, //skip next player
             _ => {},
         }

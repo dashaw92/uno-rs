@@ -16,7 +16,7 @@ pub struct Card {
 impl Display for Card {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let color: char = self.color.into();
-        let face: &str = self.face.into();
+        let face: char = self.face.into();
 
         write!(f, "{}{}", color, face)
     }
@@ -51,9 +51,16 @@ impl FromStr for Card {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Card, Self::Err> {
-        //I know this is messy, but for now it's fine
-        let color = s.chars().nth(0).unwrap().to_string().parse()?;
-        let face = s.chars().nth(1).unwrap().to_string().into();
+        let color = match s.chars().nth(0)
+                        .map(|x| x.to_string())
+                        .and_then(|col| col.parse::<Color>().ok()) {
+            Some(color) => color,
+            None => return Err("Could not parse color."),
+        };
+        let face = match Face::from(s.chars().nth(1).unwrap()) {
+            Some(face) => face,
+            None => return Err("Invalid face identifier."),
+        };
 
         Ok(Card::new(color, face))
     }

@@ -1,4 +1,4 @@
-use uno::*;
+use uno::{Card, Uno, TurnResult};
 
 use std::io::{self, BufReader, BufRead};
 
@@ -23,6 +23,7 @@ fn main() {
         println!("Your move?");
 
         let _ = stdin.read_line(&mut line);
+        line = line.trim().to_string();
         match line.trim().to_uppercase().as_ref() {
             "D" => {
                 let card = uno.draw_card();
@@ -37,8 +38,17 @@ fn main() {
         match line.parse::<Card>() {
             Ok(card) => {
                 println!();
-                println!("You played a {}!", card.display_name());
-                println!("{:?}", uno.play_card(card));
+                match uno.play_card(card) {
+                    TurnResult::Success(c) => {
+                        println!("You played a {}!", c.display_name());
+                    },
+                    TurnResult::InvalidMove(discard, played) => {
+                        println!("Invalid move! You cannot play a {} on a {}!", played.display_name(), discard.display_name());
+                    },
+                    TurnResult::NotHoldingCard(c) => {
+                        println!("You don't have a {}!", c.display_name());
+                    },
+                }
                 println!();
             },
             Err(e) => println!("Error parsing card from {}: {}", line, e),

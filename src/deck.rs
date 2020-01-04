@@ -49,13 +49,27 @@ impl Default for Deck {
         let mut cards: Vec<Card> = Vec::with_capacity(108);
 
         &[Color::Red, Color::Green, Color::Blue, Color::Yellow].into_iter().for_each(|&color| {
-            cards.push(Card::new(color, "0".into()).into());
+            cards.push(Card::new(color, Face::from('0').unwrap()).into());
             (0..2).into_iter().for_each(|_| {
                 cards.push(Card::new(color, Face::DrawTwo).into());
                 cards.push(Card::new(color, Face::Reverse).into());
                 cards.push(Card::new(color, Face::Skip).into());
 
-                (1..=9).into_iter().for_each(|val| cards.push(Card::new(color, val.to_string().into()).into()));
+                (1..=9).into_iter().for_each(|val| {
+                    let ch = match val {
+                        1 => '1',
+                        2 => '2',
+                        3 => '3',
+                        4 => '4',
+                        5 => '5',
+                        6 => '6',
+                        7 => '7',
+                        8 => '8',
+                        9 => '9',
+                        _ => unreachable!(),
+                    };
+                    cards.push(Card::new(color, Face::from(ch).unwrap()).into())
+                });
             });
         });
 
