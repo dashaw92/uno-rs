@@ -22,8 +22,8 @@ impl Xorshift {
 pub fn shuffle<T>(data: &mut [T]) {
     let time = SystemTime::now()
                     .duration_since(SystemTime::UNIX_EPOCH)
-                    .unwrap()
-                    .as_nanos() as u32;
+                    .map(|dur| dur.as_nanos() as u32)
+                    .unwrap_or(0x1312E1); //13 - 12 = 1
     let mut r = Xorshift::new(time);
 
     let len = data.len();

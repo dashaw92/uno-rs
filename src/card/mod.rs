@@ -57,7 +57,7 @@ impl FromStr for Card {
             Some(color) => color,
             None => return Err("Could not parse color."),
         };
-        let face = match Face::from(s.chars().nth(1).unwrap()) {
+        let face = match s.chars().nth(1).map(Face::from).flatten() {
             Some(face) => face,
             None => return Err("Invalid face identifier."),
         };
