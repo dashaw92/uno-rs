@@ -3,15 +3,13 @@ use crate::deck::Deck;
 use crate::direction::*;
 use crate::player::Player;
 
-use std::fmt::{self, Display};
-
 pub struct Uno {
     pub draw_deck: Deck,
     pub discard: Deck,
     pub direction: GameDirection,
-    current_turn: usize,
-    players: Vec<Player>,
-    current_player: usize,
+    pub current_turn: usize,
+    pub players: Vec<Player>,
+    pub current_player: usize,
 }
 
 impl Uno {
@@ -124,25 +122,6 @@ impl Uno {
                 }
             }
         }
-    }
-}
-
-impl Display for Uno {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let players = self.players.iter().map(|p| format!("{} ", p)).fold(String::new(), |acc, p| acc + p.as_ref());
-        
-        write!(f, "Cards in draw pile: {}
-Cards in discard: {}
-Top discard: {:?}
-Players: {}
-Direction: {:?}
-Turns: {}",
-                (*self.draw_deck).len(), 
-                (*self.discard).len(), 
-                self.discard.peek_top_card(), 
-                players,
-                self.direction,
-                self.current_turn)
     }
 }
 

@@ -21,7 +21,9 @@ fn main() {
     let mut line = String::new();
     loop {
         line.clear();
-        println!("\n{}", uno);
+        println!("\nTurn {}", uno.current_turn);
+        println!("Last card played: {}", uno.discard.peek_top_card().unwrap().display_name());
+        println!("Game direction: {:?}", uno.direction);
         println!("\nPlayer {}'s turn", uno.current_player());
         println!("Your cards: {}", uno.current_player().hand);
         println!("Your move?");
