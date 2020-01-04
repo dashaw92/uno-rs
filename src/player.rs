@@ -12,10 +12,9 @@ impl Player {
     pub fn new<S: ToString>(name: S) -> Player {
         Player {
             name: name.to_string(),
-            //Reserve space for half the deck. 
-            //We'll assume no player will get more than that.
+            //We'll assume no player will get more than this many cards.
             //If they do.... unlucky :^)
-            hand: Vec::with_capacity(54).into(),
+            hand: Vec::with_capacity(25).into(),
         }
     }
 
