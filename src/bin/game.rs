@@ -25,6 +25,7 @@ fn main() {
         println!("Cards in draw pile: {}", (*uno.draw_deck).len());
         println!("Cards in discard pile: {}", (*uno.discard).len());
         println!("Last card played: {}", uno.discard.peek_top_card().unwrap().display_name());
+        println!("Color of last card: {:?}", uno.discard.peek_top_card().unwrap().color);
         println!("Game direction: {:?}", uno.direction);
         println!("Player {}'s turn", uno.current_player());
         println!("\nYour cards: {}", uno.current_player().hand);
