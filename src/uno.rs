@@ -33,13 +33,8 @@ impl Uno {
             current_player: 0,
         };
 
-        //this method of handing out cards is technically not fair
-        //since players will get cards from (n * players) -> (n * players + 7) cards,
-        //when it should cycle between all players for each card
-        //
-        //but who cares
-        (0..uno.players.len()).into_iter().for_each(|i| {
-            (0..7).into_iter().for_each(|_| {
+        (0..7).into_iter().for_each(|_| {
+            (0..uno.players.len()).into_iter().for_each(|i| {
                 let card = uno.draw_card();
                 uno.players[i].add_card(card);
             });
