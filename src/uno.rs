@@ -20,8 +20,8 @@ impl Uno {
             panic!("Need at least two players to play!");
         }
 
-        if players.len() > 4 {
-            panic!("Cannot have more than 4 players in a game!");
+        if players.len() > 8 {
+            panic!("Cannot have more than 8 players in a game!");
         }
 
         let mut uno = Uno {

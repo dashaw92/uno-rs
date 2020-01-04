@@ -8,6 +8,10 @@ fn main() {
         "Bob".into(),
         "Cam".into(),
         "Dan".into(),
+        "Edd".into(),
+        "Fil".into(),
+        "Gem".into(),
+        "Hal".into(),
     ];
 
     let mut uno = Uno::create_game(players);
