@@ -1,4 +1,4 @@
-use std::ops::{AddAssign, Not};
+use std::ops::{Add, Not};
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub enum GameDirection {
@@ -15,11 +15,13 @@ impl GameDirection {
     }
 }
 
-impl AddAssign<GameDirection> for usize {
-    fn add_assign(&mut self, rhs: GameDirection) {
+impl Add<GameDirection> for isize {
+    type Output = isize;
+
+    fn add(self, rhs: GameDirection) -> Self::Output {
         match rhs {
-            GameDirection::Clockwise => *self += 1,
-            GameDirection::CounterClockwise => *self -= 1,
+            GameDirection::Clockwise => self + 1,
+            GameDirection::CounterClockwise => self - 1,
         }
     }
 }

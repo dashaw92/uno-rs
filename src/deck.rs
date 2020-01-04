@@ -100,8 +100,10 @@ impl DerefMut for Deck {
 
 impl Display for Deck {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let joined = self.cards.iter().map(|card| format!(" {} :", card.display_name())).fold(String::new(), |acc, card| acc + &card);
-        write!(f, "{}", joined)
+        let joined: Vec<_> = self.cards.iter()
+            .map(Card::display_name)
+            .collect();
+        write!(f, "{:?}", joined)
     }
 }
 

@@ -22,10 +22,12 @@ fn main() {
     loop {
         line.clear();
         println!("\nTurn {}", uno.current_turn);
+        println!("Cards in draw pile: {}", (*uno.draw_deck).len());
+        println!("Cards in discard pile: {}", (*uno.discard).len());
         println!("Last card played: {}", uno.discard.peek_top_card().unwrap().display_name());
         println!("Game direction: {:?}", uno.direction);
-        println!("\nPlayer {}'s turn", uno.current_player());
-        println!("Your cards: {}", uno.current_player().hand);
+        println!("Player {}'s turn", uno.current_player());
+        println!("\nYour cards: {}", uno.current_player().hand);
         println!("Your move?");
 
         let _ = stdin.read_line(&mut line);
