@@ -64,11 +64,7 @@ impl Uno {
     }
 
     pub fn play_card(&mut self, card: Card) -> TurnResult {
-        let top_discard = match self.discard.peek_top_card() {
-            Some(&card) => card,
-            None => Card::new(Color::Red, Face::ColorCard).into(),
-        };
-
+        let top_discard = self.discard.peek_top_card().map(|&x| x).unwrap_or(Card::new(Color::Red, Face::ColorCard));
         let player = &mut self.players[self.current_player];
 
         if !player.get_hand().has_card(card) {
