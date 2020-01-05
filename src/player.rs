@@ -1,11 +1,17 @@
 use crate::card::Card;
 use crate::deck::Deck;
 
-use std::fmt::{self, Display};
+use std::fmt::{self, Debug, Display};
 
 pub struct Player {
     pub name: String,
     pub hand: Deck,
+}
+
+impl Debug for Player {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Player: {}, Hand: {}", self.name, self.hand)
+    }
 }
 
 impl Player {

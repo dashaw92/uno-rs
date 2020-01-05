@@ -57,6 +57,10 @@ fn main() {
                     TurnResult::NotHoldingCard(c) => {
                         println!("You don't have a {}!", c.display_name());
                     },
+                    TurnResult::GameOver => {
+                        println!("Game over! You won!");
+                        break;
+                    },
                 }
                 println!();
             },

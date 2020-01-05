@@ -62,6 +62,10 @@ impl Uno {
         player.hand -= card;
         self.discard += card;
 
+        if player.hand.is_empty() {
+            return TurnResult::GameOver;
+        }
+
         match card.face {
             Face::DrawFour | Face::DrawTwo => {
                 let amount = match card.face {
@@ -128,4 +132,5 @@ pub enum TurnResult {
     Success(Card),
     InvalidMove(Card, Card),
     NotHoldingCard(Card),
+    GameOver,
 }
