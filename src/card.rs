@@ -55,11 +55,11 @@ impl FromStr for Card {
             .chars()
             .nth(0)
             .map(|x| x.to_string())
-            .and_then(|col| col.parse::<Color>().ok())
-        {
+            .and_then(|col| col.parse::<Color>().ok()) {
             Some(color) => color,
             None => return Err("Could not parse color."),
         };
+
         let face = match s.chars().nth(1).map(Face::from).flatten() {
             Some(face) => face,
             None => return Err("Invalid face identifier."),
