@@ -121,6 +121,7 @@ impl AddAssign<Card> for Deck {
 
 impl SubAssign<Card> for Deck {
     fn sub_assign(&mut self, rhs: Card) {
+        //TODO: Vec::drain_filter / Vec::retain
         for i in 0..self.cards.len() {
             match rhs.face {
                 Face::ColorCard | Face::DrawFour => {

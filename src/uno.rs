@@ -93,13 +93,11 @@ impl Uno {
 
     fn do_turn_increase(&mut self) -> usize {
         self.current_turn += 1;
-        let mut current = self.current_player;
-        current = match current as isize + self.direction {
+        self.current_player = match self.current_player as isize + self.direction {
             x if x < 0 => self.players.len() - 1,
             x => x as usize,
         };
-        current %= self.players.len();
-        self.current_player = current;
+        self.current_player %= self.players.len();
         self.current_player
     }
 
@@ -114,13 +112,12 @@ impl Uno {
                 let top = (*self.discard).remove(0);
                 if !(*self.discard).is_empty() {
                     self.draw_deck.reclaim(&mut self.discard);
-                    self.discard += top;
-                    self.draw_card()
                 } else {
                     self.draw_deck.reclaim(&mut Deck::default());
-                    self.discard += top;
-                    self.draw_card()
                 }
+
+                self.discard += top;
+                self.draw_card()
             }
         }
     }
