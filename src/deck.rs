@@ -1,5 +1,6 @@
 use crate::card::{color::*, face::*, *};
 
+use std::char;
 use std::fmt::{self, Display};
 use std::ops::{AddAssign, Deref, DerefMut, SubAssign};
 
@@ -45,32 +46,19 @@ impl Default for Deck {
     fn default() -> Deck {
         let mut cards: Vec<Card> = Vec::with_capacity(108);
 
-        &[Color::Red, Color::Green, Color::Blue, Color::Yellow]
-            .into_iter()
-            .for_each(|&color| {
-                cards.push(Card::new(color, Face::from('0').unwrap()).into());
-                (0..2).into_iter().for_each(|_| {
-                    cards.push(Card::new(color, Face::DrawTwo).into());
-                    cards.push(Card::new(color, Face::Reverse).into());
-                    cards.push(Card::new(color, Face::Skip).into());
+        [Color::Red, Color::Green, Color::Blue, Color::Yellow].into_iter().for_each(|&color| {
+            cards.push(Card::new(color, Face::Zero));
+            (0..2).into_iter().for_each(|_| {
+                cards.push(Card::new(color, Face::DrawTwo));
+                cards.push(Card::new(color, Face::Reverse));
+                cards.push(Card::new(color, Face::Skip));
 
-                    (1..=9).into_iter().for_each(|val| {
-                        let ch = match val {
-                            1 => '1',
-                            2 => '2',
-                            3 => '3',
-                            4 => '4',
-                            5 => '5',
-                            6 => '6',
-                            7 => '7',
-                            8 => '8',
-                            9 => '9',
-                            _ => unreachable!(),
-                        };
-                        cards.push(Card::new(color, Face::from(ch).unwrap()).into())
-                    });
-                });
+                (1..=9).into_iter()
+                    .filter_map(|x| char::from_digit(x, 10))
+                    .filter_map(Face::from)
+                    .for_each(|face| cards.push(Card::new(color, face)));
             });
+        });
 
         (0..4).into_iter().for_each(|_| {
             cards.push(Card::new(Color::Red, Face::DrawFour));

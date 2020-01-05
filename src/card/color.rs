@@ -12,16 +12,13 @@ impl FromStr for Color {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Color, Self::Err> {
-        s.chars()
-            .nth(0)
-            .and_then(|ch| match ch {
+        s.chars().nth(0).and_then(|ch| match ch {
                 'y' | 'Y' => Some(Color::Yellow),
                 'r' | 'R' => Some(Color::Red),
                 'b' | 'B' => Some(Color::Blue),
                 'g' | 'G' => Some(Color::Green),
                 _ => None,
-            })
-            .ok_or("Colors must be one of Y, R, G, or B.")
+        }).ok_or("Colors must be one of Y, R, G, or B.")
     }
 }
 

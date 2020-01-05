@@ -64,11 +64,7 @@ impl Uno {
     }
 
     pub fn play_card(&mut self, card: Card) -> TurnResult {
-        let top_discard = self
-            .discard
-            .peek_top_card()
-            .map(|&x| x)
-            .unwrap_or(Card::new(Color::Red, Face::ColorCard));
+        let top_discard = self.discard.peek_top_card().map(|&x| x).unwrap_or(Card::new(Color::Red, Face::ColorCard));
         let player = &mut self.players[self.current_player];
 
         if !player.get_hand().has_card(card) {
@@ -100,17 +96,15 @@ impl Uno {
                 let drawcards: Vec<_> = (0..amount).into_iter().map(|_| self.draw_card()).collect();
                 let player = &mut self.players[self.current_player];
                 drawcards.into_iter().for_each(|card| player.add_card(card));
-            }
+            },
             Face::Reverse => {
                 self.direction = !self.direction;
                 if self.players.len() < 3 {
                     self.do_turn_increase();
                 }
-            }
-            Face::Skip => {
-                self.do_turn_increase();
-            } //skip next player
-            _ => {}
+            },
+            Face::Skip => { self.do_turn_increase(); }, //skip next player
+            _ => {},
         }
 
         self.do_turn_increase();
@@ -144,7 +138,7 @@ impl Uno {
 
                 self.discard += top;
                 self.draw_card()
-            }
+            },
         }
     }
 }
