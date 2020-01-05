@@ -51,19 +51,19 @@ impl FromStr for Card {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Card, Self::Err> {
-        let color = match s
+        let color = s
             .chars()
             .nth(0)
             .map(|x| x.to_string())
             .and_then(|col| col.parse::<Color>().ok())
-        {
-            Some(color) => color,
-            None => return Err("Could not parse color."),
-        };
-        let face = match s.chars().nth(1).map(Face::from).flatten() {
-            Some(face) => face,
-            None => return Err("Invalid face identifier."),
-        };
+            .ok_or("Could not parse color.")?;
+
+        let face = s
+            .chars()
+            .nth(1)
+            .map(Face::from)
+            .flatten()
+            .ok_or("Invalid face identifier")?;
 
         Ok(Card::new(color, face))
     }

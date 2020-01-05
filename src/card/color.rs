@@ -12,10 +12,6 @@ impl FromStr for Color {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Color, Self::Err> {
-        if s.is_empty() {
-            return Err("Color cannot be empty.");
-        }
-
         s.chars()
             .nth(0)
             .and_then(|ch| match ch {
