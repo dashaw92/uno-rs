@@ -6,12 +6,12 @@ fn main() {
     let players = vec![
         "Ali".into(),
         "Bob".into(),
-        "Cam".into(),
-        "Dan".into(),
-        "Edd".into(),
-        "Fil".into(),
-        "Gem".into(),
-        "Hal".into(),
+        // "Cam".into(),
+        // "Dan".into(),
+        // "Edd".into(),
+        // "Fil".into(),
+        // "Gem".into(),
+        // "Hal".into(),
     ];
 
     let mut uno = Uno::create_game(players);

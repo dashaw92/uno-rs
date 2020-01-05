@@ -37,10 +37,7 @@ impl Deck {
     }
 
     pub fn has_card(&self, rhs: Card) -> bool {
-        self.cards.iter().any(|&card| match card.face {
-            Face::ColorCard | Face::DrawFour => card.face == rhs.face,
-            _ => card == rhs,
-        })
+        self.cards.iter().any(|&card| card == rhs)
     }
 }
 
@@ -121,19 +118,10 @@ impl AddAssign<Card> for Deck {
 
 impl SubAssign<Card> for Deck {
     fn sub_assign(&mut self, rhs: Card) {
-        //TODO: Vec::drain_filter / Vec::retain
         for i in 0..self.cards.len() {
-            match rhs.face {
-                Face::ColorCard | Face::DrawFour => {
-                    if (*self)[i].face == rhs.face {
-                        (*self).remove(i);
-                        return;
-                    }
-                },
-                _ => if (*self)[i] == rhs {
-                    (*self).remove(i);
-                    return;
-                },
+            if (*self)[i] == rhs {
+                (*self).remove(i);
+                return;
             }
         }
     }

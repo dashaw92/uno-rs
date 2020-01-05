@@ -7,7 +7,7 @@ use color::*;
 use std::fmt::{self, Display};
 use std::str::FromStr;
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+#[derive(Copy, Clone, Eq, Debug)]
 pub struct Card {
     pub color: Color,
     pub face: Face,
@@ -66,10 +66,38 @@ impl FromStr for Card {
     }
 }
 
+impl PartialEq for Card {
+    fn eq(&self, other: &Self) -> bool {
+        match other.face {
+            Face::ColorCard | Face::DrawFour => self.face == other.face,
+            _ => self.face == other.face && self.color == other.color,
+        }
+    }
+}
+
 #[allow(unused)]
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_partial_eq() {
+        let draw_four_red = Card::new(Color::Red, Face::DrawFour);
+        let draw_four_blue = Card::new(Color::Blue, Face::DrawFour);
+        assert_eq!(draw_four_red, draw_four_blue);
+
+        let red_color_change = Card::new(Color::Red, Face::ColorCard);
+        assert_ne!(draw_four_red, red_color_change);
+
+        let blue_color_change = Card::new(Color::Blue, Face::ColorCard);
+        assert_eq!(red_color_change, blue_color_change);
+
+        let yellow_zero = Card::new(Color::Yellow, Face::Zero);
+        assert_ne!(yellow_zero, draw_four_red);
+
+        let blue_zero = Card::new(Color::Blue, Face::Zero);
+        assert_ne!(yellow_zero, blue_zero);
+    }
 
     #[test]
     fn test_card_rules() {
