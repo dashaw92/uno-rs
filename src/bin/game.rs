@@ -1,6 +1,6 @@
-use uno::{Card, Uno, TurnResult};
+use uno::{Card, TurnResult, Uno};
 
-use std::io::{self, BufReader, BufRead};
+use std::io::{self, BufRead, BufReader};
 
 fn main() {
     let players = vec![
@@ -24,8 +24,14 @@ fn main() {
         println!("\nTurn {}", uno.current_turn());
         println!("Cards in draw pile: {}", (*uno.deck()).len());
         println!("Cards in discard pile: {}", (*uno.discard()).len());
-        println!("Last card played: {}", uno.discard().peek_top_card().unwrap().display_name());
-        println!("Color of last card: {:?}", uno.discard().peek_top_card().unwrap().color);
+        println!(
+            "Last card played: {}",
+            uno.discard().peek_top_card().unwrap().display_name()
+        );
+        println!(
+            "Color of last card: {:?}",
+            uno.discard().peek_top_card().unwrap().color
+        );
         println!("Game direction: {:?}", uno.direction());
         println!("Player {}'s turn", uno.current_player());
         println!("\nYour cards: {}", uno.current_player().get_hand());
@@ -39,9 +45,9 @@ fn main() {
                 println!("You drew a card: {}", card.display_name());
                 *uno.current_player().get_hand_mut() += card;
                 continue;
-            },
+            }
             "EXIT" => break,
-            _ => {},
+            _ => {}
         }
 
         match line.parse::<Card>() {
@@ -50,20 +56,24 @@ fn main() {
                 match uno.play_card(card) {
                     TurnResult::Success(c) => {
                         println!("You played a {}!", c.display_name());
-                    },
+                    }
                     TurnResult::InvalidMove(discard, played) => {
-                        println!("Invalid move! You cannot play a {} on a {}!", played.display_name(), discard.display_name());
-                    },
+                        println!(
+                            "Invalid move! You cannot play a {} on a {}!",
+                            played.display_name(),
+                            discard.display_name()
+                        );
+                    }
                     TurnResult::NotHoldingCard(c) => {
                         println!("You don't have a {}!", c.display_name());
-                    },
+                    }
                     TurnResult::GameOver => {
                         println!("Game over! You won!");
                         break;
-                    },
+                    }
                 }
                 println!();
-            },
+            }
             Err(e) => println!("Error parsing card from {}: {}", line, e),
         }
     }

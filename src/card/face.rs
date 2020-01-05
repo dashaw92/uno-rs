@@ -43,21 +43,21 @@ impl Face {
 impl Into<char> for Face {
     fn into(self) -> char {
         match self {
-            Face::DrawFour =>   'D',
-            Face::ColorCard =>  'C',
-            Face::Reverse =>    'R',
-            Face::Skip =>       'S',
-            Face::DrawTwo =>    'T',
-            Face::Zero =>       '0',
-            Face::One =>        '1',
-            Face::Two =>        '2',
-            Face::Three =>      '3',
-            Face::Four =>       '4',
-            Face::Five =>       '5',
-            Face::Six =>        '6',
-            Face::Seven =>      '7',
-            Face::Eight =>      '8',
-            Face::Nine =>       '9',
+            Face::DrawFour => 'D',
+            Face::ColorCard => 'C',
+            Face::Reverse => 'R',
+            Face::Skip => 'S',
+            Face::DrawTwo => 'T',
+            Face::Zero => '0',
+            Face::One => '1',
+            Face::Two => '2',
+            Face::Three => '3',
+            Face::Four => '4',
+            Face::Five => '5',
+            Face::Six => '6',
+            Face::Seven => '7',
+            Face::Eight => '8',
+            Face::Nine => '9',
         }
     }
 }

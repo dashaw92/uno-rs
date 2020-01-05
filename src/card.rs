@@ -1,8 +1,8 @@
 pub mod color;
 pub mod face;
 
-use face::Face;
 use color::*;
+use face::Face;
 
 use std::fmt::{self, Display};
 use std::str::FromStr;
@@ -51,9 +51,12 @@ impl FromStr for Card {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Card, Self::Err> {
-        let color = match s.chars().nth(0)
-                        .map(|x| x.to_string())
-                        .and_then(|col| col.parse::<Color>().ok()) {
+        let color = match s
+            .chars()
+            .nth(0)
+            .map(|x| x.to_string())
+            .and_then(|col| col.parse::<Color>().ok())
+        {
             Some(color) => color,
             None => return Err("Could not parse color."),
         };
@@ -104,7 +107,7 @@ mod tests {
         let draw_four = Card::new(Color::Yellow, Face::DrawFour);
         let draw_four2 = Card::new(Color::Red, Face::DrawFour);
         assert!(draw_four.can_play_on(draw_four2));
-        
+
         let green_draw_two = Card::new(Color::Green, Face::DrawTwo);
         let red_draw_two = Card::new(Color::Red, Face::DrawTwo);
         assert!(green_draw_two.can_play_on(red_draw_two));

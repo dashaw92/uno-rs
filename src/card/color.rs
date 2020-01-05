@@ -16,13 +16,16 @@ impl FromStr for Color {
             return Err("Color cannot be empty.");
         }
 
-        s.chars().nth(0).and_then(|ch| match ch {
-            'y' | 'Y' => Some(Color::Yellow),
-            'r' | 'R' => Some(Color::Red),
-            'b' | 'B' => Some(Color::Blue),
-            'g' | 'G' => Some(Color::Green),
-            _ => None,
-        }).ok_or("Colors must be one of Y, R, G, or B.")
+        s.chars()
+            .nth(0)
+            .and_then(|ch| match ch {
+                'y' | 'Y' => Some(Color::Yellow),
+                'r' | 'R' => Some(Color::Red),
+                'b' | 'B' => Some(Color::Blue),
+                'g' | 'G' => Some(Color::Green),
+                _ => None,
+            })
+            .ok_or("Colors must be one of Y, R, G, or B.")
     }
 }
 
