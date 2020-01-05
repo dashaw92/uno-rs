@@ -4,15 +4,35 @@ use crate::direction::*;
 use crate::player::Player;
 
 pub struct Uno {
-    pub draw_deck: Deck,
-    pub discard: Deck,
-    pub direction: GameDirection,
-    pub current_turn: usize,
-    pub players: Vec<Player>,
-    pub current_player: usize,
+    draw_deck: Deck,
+    discard: Deck,
+    direction: GameDirection,
+    current_turn: usize,
+    players: Vec<Player>,
+    current_player: usize,
 }
 
 impl Uno {
+    pub fn deck(&self) -> &Deck {
+        &self.draw_deck
+    }
+
+    pub fn discard(&self) -> &Deck {
+        &self.discard
+    }
+
+    pub fn direction(&self) -> GameDirection {
+        self.direction
+    }
+
+    pub fn players(&self) -> &[Player] {
+        &self.players
+    }
+
+    pub fn current_turn(&self) -> usize {
+        self.current_turn
+    }
+
     pub fn create_game(players: Vec<Player>) -> Uno {
         if players.len() < 2 {
             panic!("Need at least two players to play!");
@@ -51,7 +71,7 @@ impl Uno {
 
         let player = &mut self.players[self.current_player];
 
-        if !player.hand.has_card(card) {
+        if !player.get_hand().has_card(card) {
             return TurnResult::NotHoldingCard(card);
         }
 
@@ -59,10 +79,10 @@ impl Uno {
             return TurnResult::InvalidMove(top_discard, card);
         }
 
-        player.hand -= card;
+        *player.get_hand_mut() -= card;
         self.discard += card;
 
-        if player.hand.is_empty() {
+        if player.get_hand().is_empty() {
             return TurnResult::GameOver;
         }
 

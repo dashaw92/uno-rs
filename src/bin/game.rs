@@ -21,14 +21,14 @@ fn main() {
     let mut line = String::new();
     loop {
         line.clear();
-        println!("\nTurn {}", uno.current_turn);
-        println!("Cards in draw pile: {}", (*uno.draw_deck).len());
-        println!("Cards in discard pile: {}", (*uno.discard).len());
-        println!("Last card played: {}", uno.discard.peek_top_card().unwrap().display_name());
-        println!("Color of last card: {:?}", uno.discard.peek_top_card().unwrap().color);
-        println!("Game direction: {:?}", uno.direction);
+        println!("\nTurn {}", uno.current_turn());
+        println!("Cards in draw pile: {}", (*uno.deck()).len());
+        println!("Cards in discard pile: {}", (*uno.discard()).len());
+        println!("Last card played: {}", uno.discard().peek_top_card().unwrap().display_name());
+        println!("Color of last card: {:?}", uno.discard().peek_top_card().unwrap().color);
+        println!("Game direction: {:?}", uno.direction());
         println!("Player {}'s turn", uno.current_player());
-        println!("\nYour cards: {}", uno.current_player().hand);
+        println!("\nYour cards: {}", uno.current_player().get_hand());
         println!("Your move?");
 
         let _ = stdin.read_line(&mut line);
@@ -37,7 +37,7 @@ fn main() {
             "D" => {
                 let card = uno.draw_card();
                 println!("You drew a card: {}", card.display_name());
-                uno.current_player().hand += card;
+                *uno.current_player().get_hand_mut() += card;
                 continue;
             },
             "EXIT" => break,

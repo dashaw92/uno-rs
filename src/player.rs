@@ -4,8 +4,8 @@ use crate::deck::Deck;
 use std::fmt::{self, Debug, Display};
 
 pub struct Player {
-    pub name: String,
-    pub hand: Deck,
+    name: String,
+    hand: Deck,
 }
 
 impl Debug for Player {
@@ -26,6 +26,18 @@ impl Player {
 
     pub fn add_card(&mut self, card: Card) {
         self.hand += card;
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn get_hand(&self) -> &Deck {
+        &self.hand
+    }
+
+    pub fn get_hand_mut(&mut self) -> &mut Deck {
+        &mut self.hand
     }
 }
 
