@@ -5,5 +5,8 @@ authors = ["dashaw92 <dashaw92@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "shuffle"
+crate-type = ["dylib"]
 
 [dependencies]

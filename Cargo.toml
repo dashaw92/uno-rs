@@ -8,3 +8,7 @@ edition = "2018"
 
 [dependencies]
 shuffle = { path = "shuffle" }
+
+[lib]
+name = "uno"
+crate-type = ["dylib"]
