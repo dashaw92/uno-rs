@@ -46,7 +46,7 @@ impl Default for Deck {
     fn default() -> Deck {
         let mut cards: Vec<Card> = Vec::with_capacity(108);
 
-        [Color::Red, Color::Green, Color::Blue, Color::Yellow].into_iter().for_each(|&color| {
+        [Color::Red, Color::Green, Color::Blue, Color::Yellow].iter().for_each(|&color| {
             cards.push(Card::new(color, Face::Zero));
             (0..2).into_iter().for_each(|_| {
                 cards.push(Card::new(color, Face::DrawTwo));
